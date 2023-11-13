@@ -23,3 +23,4 @@
 #define SYS_root   22
 #define SYS_uncle  23
 #define SYS_copy   24
+#define SYS_lifetime 25

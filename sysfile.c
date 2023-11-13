@@ -282,17 +282,19 @@ create(char *path, short type, short major, short minor)
   return ip;
 }
 
+
 int
 sys_open(void)
 {
   char *path;
-  int fd, omode;
-  struct file *f;
-  struct inode *ip;
+  int omode;
 
   if(argstr(0, &path) < 0 || argint(1, &omode) < 0)
     return -1;
 
+  int fd;
+  struct file *f;
+  struct inode *ip;
   begin_op();
 
   if(omode & O_CREATE){
@@ -441,4 +443,81 @@ sys_pipe(void)
   fd[0] = fd0;
   fd[1] = fd1;
   return 0;
+}
+
+
+struct file* open(char* path,int omode){
+  int fd;
+  struct file *f;
+  struct inode *ip;
+  begin_op();
+
+  if(omode & O_CREATE){
+    ip = create(path, T_FILE, 0, 0);
+    if(ip == 0){
+      end_op();
+      return 0;//zero as null pointer
+    }
+  } else {
+    if((ip = namei(path)) == 0){
+      end_op();
+      return 0;
+    }
+    ilock(ip);
+    if(ip->type == T_DIR && omode != O_RDONLY){
+      iunlockput(ip);
+      end_op();
+      return 0;
+    }
+  }
+
+  if((f = filealloc()) == 0 || (fd = fdalloc(f)) < 0){
+    if(f)
+      fileclose(f);
+    iunlockput(ip);
+    end_op();
+    return 0;
+  }
+  iunlock(ip);
+  end_op();
+
+  f->type = FD_INODE;
+  f->ip = ip;
+  f->off = 0;
+  f->readable = !(omode & O_WRONLY);
+  f->writable = (omode & O_WRONLY) || (omode & O_RDWR);
+  return f;
+}
+//lab 2
+int sys_copy(void){
+  char *src,*dest;
+  if (argstr(0,&src) < 0 || argstr(1,&dest)<0){
+    cprintf("Invalid arguments\n");
+    return -1;
+  }
+  cprintf("in system call copy from %s to %s\n",src,dest);
+  struct file *src_file = open(src,O_RDONLY);
+  if (!src_file){
+    cprintf("Failed to open src file\n");
+    return -1;
+  }
+  char buf[512];
+  struct file* dest_file = open(dest,O_CREATE | O_RDWR);
+  if (!dest_file){
+    cprintf("Failed to open dest file\n");
+    //fileclose(src_file);when excuted, xv6 panics
+    return -1;
+  }
+  while(1){
+    int read = fileread(src_file,buf,sizeof(buf));
+    if(!read){
+      break;
+    }
+    int wrote = filewrite(dest_file,buf,read);
+    cprintf("wrote:%d-%d-%d\n",wrote,read,sizeof(buf));
+  }
+  //fileclose(src_file); when excuted, xv6 panics
+  //fileclose(dest_file);
+  return 0;
+
 }

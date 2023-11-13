@@ -88,6 +88,9 @@ allocproc(void)
 found:
   p->state = EMBRYO;
   p->pid = nextpid++;
+  acquire(&tickslock);
+  p->ticks = ticks;//assign ticks to the Proc
+  release(&tickslock);
 
   release(&ptable.lock);
 
@@ -576,3 +579,19 @@ int get_uncle_count(void){
   return count;
 }
 
+
+int get_life_time(int pid){
+  acquire(&tickslock);
+  int now = ticks;
+  release(&tickslock);
+
+  acquire(&ptable.lock);
+  for (struct proc*p =ptable.proc;p<&ptable.proc[NPROC];p++){
+    if(p->pid == pid){
+    release(&ptable.lock);
+      return now - p->ticks;
+    }
+  }
+  release(&ptable.lock);
+  return -1;
+}

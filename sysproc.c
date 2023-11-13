@@ -1,4 +1,4 @@
-#include "user.h"
+
 #include "types.h"
 #include "x86.h"
 #include "defs.h"
@@ -8,6 +8,7 @@
 #include "mmu.h"
 #include "proc.h"
 #include "fcntl.h"
+
 
 
 int
@@ -101,40 +102,15 @@ int sys_root(void){
 }
 
 int sys_uncle(void){
+  
   cprintf("sys_uncle called for pid:%d\n",myproc()->pid);
   return get_uncle_count();
 }
 
-int sys_copy(void){
-  char *src,*dest;
-
-  if (argstr(0,&src) < 0 || argstr(1,&dest)<0){
-    cprintf("Invalid arguments\n");
+int sys_lifetime(void){
+  int pid = 0;
+  if(argint(0,&pid)<0){
     return -1;
   }
-  int src_file = open(src, O_RDONLY);
-  if(src_file<0){
-    cprintf("failed to open src file\n");
-    return -1;
-  }
-  int dest_file = open(dest,O_CREATE|O_WRONLY);
-  if(dest_file<0){
-    close(src_file);
-    cprintf("failed to open dest file\n");
-    return -1;
-  }
-  
-  char buf[512];
-  int n;
-  while(n=read(src_file,buf,sizeof(buf))){
-    if(write(dest_file,buf,n)!=n){
-      close(src_file);
-      close(dest_file);
-      cprintf("error writing\n");
-      return -1;
-    }
-  }
-  close(src_file);
-  close(dest_file);
-  return 0;
+  return get_life_time(pid);
 }

@@ -7,7 +7,7 @@ int main (int argc,char* argv[]){
     for (int i = 0;i<3;i++){
         int pid = fork();
         if(pid<0){
-            printf(1,"fork failed!\n");
+            printf(1,"fork failed!s\n");
             exit();
         }
         if(pid == 0 && i ==0){ //first child
@@ -27,7 +27,7 @@ int main (int argc,char* argv[]){
     for(int i = 0;i<3;i++){
         wait();//wait to kill zombies
     }
-    //printf(1,"time:%d\n",(unsigned)time(NULL));
+    
     exit();
     return 0;
 }

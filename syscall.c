@@ -106,6 +106,7 @@ extern int sys_uptime(void);
 extern int sys_root(void);
 extern int sys_uncle(void);
 extern int sys_copy(void);
+extern int sys_lifetime(void);
 
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
@@ -132,6 +133,7 @@ static int (*syscalls[])(void) = {
 [SYS_root]    sys_root,
 [SYS_uncle]   sys_uncle,
 [SYS_copy]    sys_copy,
+[SYS_lifetime]sys_lifetime,
 };
 
 void

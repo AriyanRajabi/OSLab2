@@ -190,7 +190,7 @@ void            clearpteu(pde_t *pgdir, char *uva);
 ///Lab 2
 int digital_root(int n);
 int get_uncle_count(void);
-
+int get_life_time(int pid);
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))

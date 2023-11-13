@@ -26,6 +26,7 @@ int uptime(void);
 int root(void);
 int uncle(void);
 int copy(const char*src,const char* dest);
+int lifetime(int pid);
 
 // ulib.c
 int stat(const char*, struct stat*);

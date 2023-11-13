@@ -185,6 +185,7 @@ UPROGS=\
 	_root\
 	_uncle\
 	_copy\
+	_lifetime\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -259,6 +260,7 @@ EXTRA=\
 	root.c\
 	uncle.c\
 	copy.c\
+	lifetime.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 
