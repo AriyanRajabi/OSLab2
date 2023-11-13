@@ -532,3 +532,47 @@ procdump(void)
     cprintf("\n");
   }
 }
+
+int get_sum(int n){
+  int result = 0;
+  for (int i = 1,j=10;;i*=10,j*=10){
+    int num = (n%j-n%i)/i;
+    result+=num;
+     if(n == n%j){
+      break;
+    }
+  }
+  return result;
+}
+
+int digital_root(int n){
+  //calc
+  if(n<0){
+    return -1;
+  }
+  int result = n;
+  while (result >=10){
+    result = get_sum(result);
+  }
+  return result;
+}
+
+int get_uncle_count(void){
+  int count = -1;//starting from -1 to ignore parent itself
+  struct proc  *current_proc = myproc(),*p,*grand_father=myproc();//myproc just to get rid of waring
+  acquire(&ptable.lock);
+  for (p=ptable.proc;p<&ptable.proc[NPROC];p++){
+    if(p->pid == current_proc->parent->parent->pid){
+      grand_father = p;
+      break;
+    }
+  }
+   for (p=ptable.proc;p<&ptable.proc[NPROC];p++){
+    if(p->parent->pid == grand_father->pid){
+     count++;
+    }
+  }
+  release(&ptable.lock);
+  return count;
+}
+
