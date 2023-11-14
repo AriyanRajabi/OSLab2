@@ -584,6 +584,9 @@ int get_life_time(int pid){
   acquire(&tickslock);
   int now = ticks;
   release(&tickslock);
+  if(pid<0){ //pass negative pid to get lifetime of current process
+    return now - myproc()->ticks;
+  }
 
   acquire(&ptable.lock);
   for (struct proc*p =ptable.proc;p<&ptable.proc[NPROC];p++){
